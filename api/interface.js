@@ -182,5 +182,52 @@ router.get('/blog_backstage/fetchArticlesList',check_api_token,(req,res) => {
 });
 
 
+/**获取文章列表数据*/
+router.get('/blog/fetchArticlesList',(req,res) => {
+    let article_type = req.query.tab == 'all' ? '' : req.query.tab;
+    let page = +req.query.page_num || 1;
+    let rows = +req.query.page_size || 12;
+    let key_word = req.query.key_word;
+    let query = {};
+    if(article_type) query.article_type = article_type;
+    if(key_word) query.article_title =  eval("/"+key_word+"/ig");
+    query.article_is_publish = true;
+    dbHelper.pageQuery(page, rows, article_module, '', query, {}, (error, $page) => {
+        if(error){
+            res.json({status: 0, msg: '获取信息失败'});
+        }else{
+            res.json({
+                status:1,
+                data: {
+                    article_arr: $page.results,
+                    article_total: $page.total,
+                    page_count: Math.ceil($page.pageCount)
+                }
+            });
+        }
+    });
+});
+
+/**获取文章内容*/
+router.get('/blog/fetchArticle',(req,res) => {
+    let fetch_condition = req.query.fetch_condition && JSON.parse(req.query.fetch_condition);
+    console.log(fetch_condition)
+    article_module.find(fetch_condition,(err,doc) => {
+        if (doc) {
+            res.json({
+                status: 1,
+                data: {
+                    articles: doc
+                }
+            });
+        } else {
+            res.json({
+                status: 0,
+                msg: '获取数据失败'
+            })
+        }
+    })
+});
+
 
 module.exports = router;
