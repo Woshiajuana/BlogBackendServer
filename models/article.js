@@ -9,7 +9,7 @@ const articleSchema = new Schema({
     article_title: String,
     article_type: String,
     article_time: Date,
-    article_con: String
+    article_con: String,
     article_is_publish: Boolean
 },{
     versionKey: false

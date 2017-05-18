@@ -67,12 +67,99 @@ router.get('/blog_backstage/uploadArticle',( req, res ) => {
         res.json({
             status: 0,
             msg: '文案都没写，竟敢调戏窝！'
-        })
+        });
         return;
     }
     article.article_time = new Date();
-    
-})
+    /**存储*/
+    article_module.create(article, (err,doc) => {
+        if (err) res.json({status: 0});
+        else res.json({status: 1});
+    });
+});
+
+/**获取文章内容*/
+router.get('/blog_backstage/fetchArticle',check_api_token,(req,res) => {
+    let fetch_condition = req.query.fetch_condition && JSON.parse(req.query.fetch_condition);
+    article_module.find(fetch_condition,(err,doc) => {
+        if (doc) {
+            res.json({
+                status: 1,
+                data: {
+                    articles: doc
+                }
+            });
+        } else {
+            res.json({
+                status: 0,
+                msg: '获取数据失败'
+            })
+        }
+    })
+});
+
+/**修改文章内容*/
+router.get('/blog_backstage/updateArticle',check_api_token,(req,res) => {
+    let article = req.query.article && JSON.parse(req.query.article);
+    article && (article.article_time = new Date());
+    article_module.update(article,(err,doc) => {
+        if (err) {
+            res.json({
+                status: 0,
+                msg: '修改失败'
+            });
+        } else {
+            res.json({
+                status: 1,
+                msg: '修改成功'
+            });
+        }
+    })
+});
+
+/**删除文章*/
+router.get('/blog_backstage/deleteArticle',check_api_token,(req,res) => {
+    let _id = req.query._id;
+    article_module.remove({_id},(err,doc) => {
+        if (err) {
+            res.json({
+                status: 0,
+                msg: '删除失败'
+            });
+        } else {
+            res.json({
+                status: 1,
+                msg: '删除成功'
+            });
+        }
+    })
+});
+
+/**后台获取文章列表数据*/
+router.get('/blog_backstage/fetchArticlesList',check_api_token,(req,res) => {
+    let article_type = req.query.tab == 'all' ? '' : req.query.tab;
+    let page = +req.query.page_num || 1;
+    let rows = +req.query.page_size || 12;
+    let key_word = req.query.key_word;
+    let query = {};
+    if(article_type) query.article_type = article_type;
+    if(key_word) query.article_title =  eval("/"+key_word+"/ig");
+    dbHelper.pageQuery(page, rows, article_module, '', query, {}, (error, $page) => {
+        if(error){
+            res.json({status: 0, msg: '获取信息失败'});
+        }else{
+            res.json({
+                status:1,
+                data: {
+                    article_arr: $page.results,
+                    article_total: $page.total,
+                    page_count: Math.ceil($page.pageCount)
+                }
+            });
+        }
+    });
+});
+
 
 
 module.exports = router;

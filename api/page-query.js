@@ -1,8 +1,6 @@
 /**
  * Created by Administrator on 2017/4/25.
  */
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
 var async = require('async');
 
 var pageQuery = function (page, pageSize, Model, populate, queryParams, sortParams, callback) {
@@ -26,6 +24,9 @@ var pageQuery = function (page, pageSize, Model, populate, queryParams, sortPara
         $page.total = count;
         $page.pageCount = (count - 1) / pageSize + 1;
         $page.results = results.records;
+        $page.results.forEach((item,index) => {
+            item.article_con && (item.article_con = '') && delete item.article_con;
+        });
         callback(err, $page);
     });
 };
