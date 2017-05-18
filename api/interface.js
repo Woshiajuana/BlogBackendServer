@@ -189,6 +189,7 @@ router.get('/blog/fetchArticlesList',(req,res) => {
     let rows = +req.query.page_size || 12;
     let key_word = req.query.key_word;
     let query = {};
+    console.log(page,rows)
     if(article_type) query.article_type = article_type;
     if(key_word) query.article_title =  eval("/"+key_word+"/ig");
     query.article_is_publish = true;
@@ -201,7 +202,7 @@ router.get('/blog/fetchArticlesList',(req,res) => {
                 data: {
                     article_arr: $page.results,
                     article_total: $page.total,
-                    page_count: Math.ceil($page.pageCount)
+                    page_count: Math.floor($page.pageCount)
                 }
             });
         }
