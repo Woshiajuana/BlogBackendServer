@@ -61,7 +61,7 @@ router.post('/blog_backstage/login',(req,res) => {
 });
 
 /**存储文章*/
-router.get('/blog_backstage/uploadArticle',( req, res ) => {
+router.post('/blog_backstage/uploadArticle',( req, res ) => {
     var article = req.query.article && JSON.parse( req.query.article );
     if (!article) {
         res.json({
@@ -118,7 +118,7 @@ router.get('/blog_backstage/offOrReleaseArticle',check_api_token,(req,res) => {
 });
 
 /**修改文章*/
-router.get('/blog_backstage/updateArticle',check_api_token,(req,res) => {
+router.post('/blog_backstage/updateArticle',check_api_token,(req,res) => {
     let article = req.query.article && JSON.parse(req.query.article);
     article && (article.article_time = new Date());
     var _id = article._id;
@@ -189,7 +189,6 @@ router.get('/blog/fetchArticlesList',(req,res) => {
     let rows = +req.query.page_size || 12;
     let key_word = req.query.key_word;
     let query = {};
-    console.log(page,rows)
     if(article_type) query.article_type = article_type;
     if(key_word) query.article_title =  eval("/"+key_word+"/ig");
     query.article_is_publish = true;
@@ -212,7 +211,6 @@ router.get('/blog/fetchArticlesList',(req,res) => {
 /**获取文章内容*/
 router.get('/blog/fetchArticle',(req,res) => {
     let fetch_condition = req.query.fetch_condition && JSON.parse(req.query.fetch_condition);
-    console.log(fetch_condition)
     article_module.find(fetch_condition,(err,doc) => {
         if (doc) {
             res.json({
