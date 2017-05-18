@@ -98,11 +98,32 @@ router.get('/blog_backstage/fetchArticle',check_api_token,(req,res) => {
     })
 });
 
-/**修改文章内容*/
+/**发布或下架*/
+router.get('/blog_backstage/offOrReleaseArticle',check_api_token,(req,res) => {
+    var _id = req.query._id,
+        article_is_publish = req.query.article_is_publish;
+    article_module.update({_id},{$set:{article_is_publish:article_is_publish}},(err,doc) => {
+        if (err) {
+            res.json({
+                status: 0,
+                msg: '操作失败'
+            });
+        } else {
+            res.json({
+                status: 1,
+                msg: '操作成功'
+            });
+        }
+    })
+});
+
+/**修改文章*/
 router.get('/blog_backstage/updateArticle',check_api_token,(req,res) => {
     let article = req.query.article && JSON.parse(req.query.article);
     article && (article.article_time = new Date());
-    article_module.update(article,(err,doc) => {
+    var _id = article._id;
+    delete article._id;
+    article_module.update({_id},article,(err,doc) => {
         if (err) {
             res.json({
                 status: 0,
