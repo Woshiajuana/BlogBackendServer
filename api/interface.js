@@ -165,7 +165,7 @@ router.get('/blog_backstage/fetchArticlesList',check_api_token,(req,res) => {
     let query = {};
     if(article_type) query.article_type = article_type;
     if(key_word) query.article_title =  eval("/"+key_word+"/ig");
-    dbHelper.pageQuery(page, rows, article_module, '', query, {}, (error, $page) => {
+    dbHelper.pageQuery(page, rows, article_module, '', query, {'article_time': -1}, (error, $page) => {
         if(error){
             res.json({status: 0, msg: '获取信息失败'});
         }else{
@@ -192,7 +192,7 @@ router.get('/blog/fetchArticlesList',(req,res) => {
     if(article_type) query.article_type = article_type;
     if(key_word) query.article_title =  eval("/"+key_word+"/ig");
     query.article_is_publish = true;
-    dbHelper.pageQuery(page, rows, article_module, '', query, {}, (error, $page) => {
+    dbHelper.pageQuery(page, rows, article_module, '', query, {'article_time': -1}, (error, $page) => {
         if(error){
             res.json({status: 0, msg: '获取信息失败'});
         }else{
